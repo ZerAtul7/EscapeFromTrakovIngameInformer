@@ -1,0 +1,14 @@
+﻿<Window x:Class="EFT_Infrormer.TopWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EFT_Infrormer"
+        mc:Ignorable="d"
+        Title="TopWindow" Height="200" Width="300" Background="Transparent" WindowStyle="None"  AllowsTransparency="True" WindowStartupLocation="Manual" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
+    <Grid>
+        
+        <Label Content="Exfils:" Foreground="ForestGreen" FontSize="25"/>
+
+    </Grid>
+</Window>
