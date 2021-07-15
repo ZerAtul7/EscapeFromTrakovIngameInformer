@@ -48,11 +48,12 @@ namespace EFT_Infrormer
         {
             Topmost = true;
             InitializeComponent();
-            var buff = "2021-07-15 00:03:48.723 +03:00|0.12.11.1.13215|Debug|exfiltration|EligiblePoints (boiler tanks): EXFIL_ZB013|UncompleteRequirements, Dorms V-Ex|NotPresent, Crossroads|RegularMode, Trailer Park|RegularMode, RUAF Roadblock|NotPresent, Smuggler's Boat|RegularMode ";
+             
+            var buff = "2021-07-13 16:32:31.151 +03:00|0.12.11.1.13215|Debug|exfiltration|EligiblePoints (mallse): NW Exfil|RegularMode, PP Exfil|UncompleteRequirements, Interchange Cooperation|RegularMode, Hole Exfill|RegularMode, Saferoom Exfil|UncompleteRequirements ";
             var buff2 = buff.Split(' ');
             for (int i = 0; i < buff2.Length; i++)
             {
-                //System.Windows.MessageBox.Show($" {i} {buff2[i] }");
+                System.Windows.MessageBox.Show($" {i} {buff2[i] }");
             }
         }
 
@@ -235,6 +236,7 @@ namespace EFT_Infrormer
                                     Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
                                     break;
                                 case "RezervBase":
+
                                     break;
                                 case "Shoreline":
                                     {
@@ -300,16 +302,53 @@ namespace EFT_Infrormer
                                     }
                                     break;
                                 case "Woods":
+
                                     break;
                                 case "Interchange":
-                                    
+                                    {
+                                        var buff = nowExf[i].Split(' ');
+                                        if (buff.Contains("mallnw"))
+                                        {
+                                            
+                                            exf += "Emercom Checkpoint = Active\n";
+                                            var PPexfil = buff[7].Split('|');
+                                            if(PPexfil[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Power Station - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Power Station - Waiting for money\n";
+                                            }
+                                            exf += "Scav Camp - Active\n";
+                                            exf += "Hole - Active\n";
+                                            exf += "SafeRoom - Waiting for electricity\n";
+                                        }
+                                        else
+                                        {
+                                            exf += "Railway = Active\n";
+                                            var PPexfil = buff[7].Split('|');
+                                            if (PPexfil[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Power Station - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Power Station - Waiting for money\n";
+                                            }
+                                            exf += "Scav Camp - Active\n";
+                                            exf += "Hole - Active\n";
+                                            exf += "SafeRoom - Waiting for electricity\n";
+                                        }
+                                    }
                                     break;
                                 case "laboratory":
+
                                     break;
                                 case "Customs":
                                     {
                                         var buff = nowExf[i].Split(' ');
-                                        if (buff[3] == "(customs:)")
+                                        if (buff.Contains("(customs:)"))
                                         {
                                             exf += "ZB_013 - Waiting for lever\n";
                                             var Vex = buff[6].Split('|');
@@ -389,6 +428,28 @@ namespace EFT_Infrormer
                         else if(nowExf[i].Contains("InfiltrationMatch"))
                         {
                             //notf
+                        }
+
+                        switch (location)
+                        {
+                            case "factory4_day":
+                              
+                                break;
+                            case "factory4_night":
+                            case "RezervBase":
+                                break;
+                            case "Shoreline":
+                               
+                                break;
+                            case "Woods":
+                                break;
+                            case "Interchange":
+                                break;
+                            case "laboratory":
+                                break;
+                            case "Customs":
+
+                                break;
                         }
 
                     }
