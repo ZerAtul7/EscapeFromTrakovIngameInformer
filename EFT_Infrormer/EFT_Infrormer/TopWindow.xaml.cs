@@ -20,12 +20,16 @@ namespace EFT_Infrormer
     public partial class TopWindow : Window
     {
         MainWindow main { get; set; }
-        public TopWindow(MainWindow window)
+        public TopWindow(MainWindow window,string message)
         {
             main = window;
             Topmost = true;
             InitializeComponent();
+            Exfils.Content = message;
+            
         }
+
+
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
