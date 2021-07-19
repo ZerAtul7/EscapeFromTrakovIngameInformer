@@ -42,13 +42,21 @@ namespace EFT_Infrormer
         string location { get; set; } = "";
 
         Thread thread2 { get; set; }
-
+        TopWindow top { get; set; }
+        string exf { get; set; }
         public MainWindow()
         {
-            Topmost = true;
+            Topmost = false;
             InitializeComponent();
-            TopWindow top = new TopWindow(this);
-            top.Show();
+
+           var buff = "2021-07-19 20:13:21.532 +03:00|0.12.11.1.13284|Debug|exfiltration|EligiblePoints (house): Factory Gate|UncompleteRequirements, RUAF Gate|NotPresent, ZB-016|RegularMode, UN Roadblock|RegularMode, South V-Ex|UncompleteRequirements, un-sec|RegularMode";
+            
+
+            var buff2 = buff.Split(' ');
+            for (int i = 0; i < buff2.Length; i++)
+            {
+                System.Windows.MessageBox.Show($" {i} {buff2[i] }");
+            }
         }
 
 
@@ -59,8 +67,11 @@ namespace EFT_Infrormer
 
             if(result != 0)
             {
+               
+              
                 
-                
+
+
                 DirectoryInfo Di = new DirectoryInfo(fbd.SelectedPath);
 
                 var dl = Di.GetFiles();
@@ -74,7 +85,7 @@ namespace EFT_Infrormer
 
                 if (found)
                 {
-                    System.Windows.MessageBox.Show("EFT Found, you can continue");
+                    System.Windows.MessageBox.Show("EFT Found, you can continue", "OK", MessageBoxButton.OK , MessageBoxImage.Exclamation);
                     GamePath.Text = fbd.SelectedPath;
 
                     
@@ -122,10 +133,38 @@ namespace EFT_Infrormer
             System.Windows.MessageBox.Show(buff2[0] + " " + buff4[0] + ".txt");
             exfilPathNew = buff1[0] + " " + buff3[0] + ".txt";
             applicationPathNew = buff2[0] + " " + buff4[0] + ".txt";
-            if(!File.Exists(exfilPathNew))
-                File.Copy(exfilPath,exfilPathNew);
-            if(!File.Exists(applicationPathNew))
-                File.Copy(applicationPath, applicationPathNew);
+            var pe = exfilPathNew;
+            var ap = applicationPathNew;
+
+
+            // Deleting files if they exists(Which we use for parse info)
+            directory.CreateSubdirectory("Utils");
+            if (File.Exists(exfilPathNew))
+            {
+                File.Move(exfilPathNew, directory.FullName + "\\Utils\\" + "1.txt");
+                
+            }
+            
+            if(File.Exists(applicationPathNew))
+            {
+                File.Move(applicationPathNew, directory.FullName + "\\Utils\\" + "2.txt");
+            }
+            Directory.Delete(directory.FullName + "\\Utils",true);
+
+            try
+            {
+                File.Copy(exfilPath, pe);
+                File.Copy(applicationPath, ap);
+
+            }
+            catch (Exception err)
+            {
+                System.Windows.MessageBox.Show("Restart program");
+            }
+            finally
+            {
+
+            }
             
 
 
@@ -149,7 +188,7 @@ namespace EFT_Infrormer
                 }
             }
             
-           
+           // Start parse app log
             thread2 = new Thread(CheckApp);
             thread2.Start();
             thread2.IsBackground = true;
@@ -196,25 +235,288 @@ namespace EFT_Infrormer
                     for (int i = iteratorExf; i < nowExf.Count; i++)
                     {
                         //Dispatcher.Invoke(new Action(() => { DebugBox.Text += $"{nowApp[i]}\n"; }));
-                        if (nowExf[i].Contains("TRACE-NetworkGameCreate profileStatus:"))
+                        if (nowExf[i].Contains("EligiblePoints"))
                         {
                             switch (location)
                             {
                                 case "factory4_day":
+                                    {
+
+                                        exf = "Cellars - Need Key\nGate 3 - Need Key\nGate 0 - Active\nGate m - Need key";
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+                                    }
                                     break;
                                 case "factory4_night":
+                                    {
+                                        exf = "Cellars - Need Key\nGate 3 - Need Key\nGate 0 - Active\nGate m - Need key";
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+                                    }
                                     break;
                                 case "RezervBase":
+                                    {
+                                        exf += "Cliff descent - Active(RR + Paracord)\n";
+                                        exf += "Scavs lands - Active(Scav + PMC)\n";
+                                        exf += "Sewer manhole - Active(No BP)\n";
+                                        exf += "D-2 - Waiting for electricity\n";
+                                        exf += "Bunker hermetic door - Waiting for electricty\n";
+                                        exf += "Train - % sec before the train arrives \n";
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+
+                                    }
                                     break;
                                 case "Shoreline":
+                                    {
+                                        var buff = nowExf[i].Split(' ');
+                                        if(buff[3] == "(riverside):")
+                                        {
+                                            exf += "Tunnel - Active\n";
+                                            var Boat = buff[5].Split('|');
+                                            if (Boat[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Boat - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Boat - Active\n";
+                                            }
+                                            var RockPassage = buff[8].Split('|');
+                                            if (RockPassage[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Rock Passage - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Rock Passage - Active\n";
+                                            }
+                                            Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+
+                                        }
+                                        else
+                                        {
+                                            exf += "RoadToCustoms - Active\n";
+                                            var Boat = buff[5].Split('|');
+                                            if (Boat[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Boat - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Boat - Active\n";
+                                            }
+                                            var CCP = buff[10].Split('|');
+                                            if (CCP[1].Contains("NotPresent"))
+                                            {
+                                                exf += "CPP Temporary - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "CPP Temporary - Active\n";
+                                            }
+                                            var RockPassage = buff[12].Split('|');
+                                            if (RockPassage[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Rock Passage - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Rock Passage - Active\n";
+                                            }
+                                            Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+
+                                        }
+                                       
+                                    }
                                     break;
                                 case "Woods":
+                                    {
+                                        var buff = nowExf[i].Split(' ');
+                                        
+                                        if (buff.Contains("old station"))
+                                        {
+                                            exf += "Outskirts - Active";
+                                            var ZB014 = buff[7].Split('|');
+                                            if(ZB014[1].Contains("NotPresent"))
+                                            {
+                                                exf += "ZB-014 - Inactive\n";
+                                                
+                                            }
+                                            else
+                                            {
+                                                exf += "ZB-014 - Need key\n";
+                                            }
+                                        }
+                                        else
+                                        {
+                                            var RUAF = buff[7].Split('|');
+                                            if (RUAF[1].Contains("NotPresent"))
+                                            {
+                                                exf += "RUAF - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "RUAF - Active\n";
+                                            }
+                                            var ZB016 = buff[8].Split('|');
+                                            if(ZB016[1].Contains("NotPresent"))
+                                            {
+                                                exf += "ZB-016 - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "ZB-016 - Active\n";
+                                            }
+                                            exf += "UN Roadblock - Active\n";
+                                            exf += "Northern UN roadblock - Active\n";
+                                        }
+
+                                        exf += "Factory gate - Active(PMC+Scav)\n";
+                                        var Vex = buff[9].Split('|');
+                                        if(Vex[1].Contains("NotPresent"))
+                                        {
+                                            exf += "Bridge V-ex - Inactive\n";
+                                        }
+                                        else
+                                        {
+                                            exf += "Bridge V-ex - Waiting for money\n";
+                                        }
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+                                    }
                                     break;
                                 case "Interchange":
+                                    {
+                                        var buff = nowExf[i].Split(' ');
+                                        if (buff.Contains("mallnw"))
+                                        {
+                                            
+                                            exf += "Emercom Checkpoint - Active\n";
+                                            exf += "Scav Camp - Active\n";
+                                            exf += "Hole - Active\n";
+                                            exf += "SafeRoom - Waiting for electricity\n";
+                                        }
+                                        else
+                                        {
+                                            exf += "Railway - Active\n";
+                                            exf += "Scav Camp - Active\n";
+                                            exf += "Hole - Active\n";
+                                            exf += "SafeRoom - Waiting for electricity\n";
+                                        }
+
+                                        var PPexfil = buff[7].Split('|');
+                                        if (PPexfil[1].Contains("NotPresent"))
+                                        {
+                                            exf += "Power Station - Inactive\n";
+                                        }
+                                        else
+                                        {
+                                            exf += "Power Station - Waiting for money\n";
+                                        }
+
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+                                    }
                                     break;
                                 case "laboratory":
+                                    {
+                                        var buff = nowExf[i].Split(' ');
+                                        exf += "Cargo elevator - Waiting for call\n";
+                                        exf += "Main Elevator - Waiting for call\n";
+                                        exf += "Ventilation - Active(No BP)\n";
+                                        exf += "Medical Block Elevator - Waiting for call\n";
+                                        exf += "Sewage Conduit - Waiting for pump\n";
+                                        var Parking = buff[9].Split('|');
+                                        if(Parking[1].Contains("NotPresent"))
+                                        {
+                                            exf += "Parking - Inactive\n";
+                                        }
+                                        else
+                                        {
+                                            exf += "Parking - Waiting for activation\n";
+                                        }
+                                        var Hangar = buff[10].Split('|');
+                                        if(Hangar[1].Contains("NotPresent"))
+                                        {
+                                            exf += "Hangar - Inactive\n";
+                                        }
+                                        else
+                                        {
+                                            exf += "Hangar - Waiting for activation\n";
+                                        }
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+                                    }
                                     break;
                                 case "Customs":
+                                    {
+                                        var buff = nowExf[i].Split(' ');
+                                        if (buff.Contains("(customs:)"))
+                                        {
+                                            exf += "ZB_013 - Waiting for lever\n";
+                                            var Vex = buff[6].Split('|');
+                                            if(Vex[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Dorms V-ex - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Dorms V-ex - Waiting for money\n";
+                                            }
+                                            exf += "ZB_011 - Active\n";
+                                            var GAS = buff[10].Split('|');
+                                            if(GAS[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Old Gas Station - Active\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Old Gas Station - Inactive\n";
+                                            }
+                                            var ZB_012 = buff[11].Split('|');
+                                            if(ZB_012[1].Contains("NotPresent"))
+                                            {
+                                                exf += "ZB-012 - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "ZB-012 - Active\n";
+                                            }
+                                            
+
+                                        }
+                                        else
+                                        {
+                                            exf += "ZB_013 - Waiting for lever\n";
+                                            var Vex = buff[7].Split('|');
+                                            if (Vex[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Dorms V-ex - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Dorms V-ex - Waiting for money\n";
+                                            }
+                                            exf += "CrossRoads - Active\n";
+                                            exf += "Trailer Park - Active\n";
+                                            //var RUAF = buff[12].Split('|');
+                                            //if(RUAF[1].Contains("NotPresent"))
+                                            //{
+                                            //    exf += "RUAF - Inactive\n";
+                                            //}
+                                            //else
+                                            //{
+                                            //    exf += "RUAF - Active\n";
+                                            //}
+                                            var Boat = buff[12].Split('|');
+                                            if(Boat[1].Contains("NotPresent"))
+                                            {
+                                                exf += "Boat - Inactive\n";
+                                            }
+                                            else
+                                            {
+                                                exf += "Boat - Active\n";
+                                            }
+                                            
+                                        }
+                                        Dispatcher.Invoke(new Action(() => { DrawExf(exf); }));
+                                    }
+                            
                                     break;
                             }
 
@@ -223,6 +525,32 @@ namespace EFT_Infrormer
                         {
                             InRaid = false;
                             // stop checking exfils
+                        }
+                        else if(nowExf[i].Contains("InfiltrationMatch"))
+                        {
+                            //notf
+                        }
+
+                        switch (location)
+                        {
+                            case "factory4_day":
+                              
+                                break;
+                            case "factory4_night":
+                            case "RezervBase":
+                                break;
+                            case "Shoreline":
+                               
+                                break;
+                            case "Woods":
+                                break;
+                            case "Interchange":
+                                break;
+                            case "laboratory":
+                                break;
+                            case "Customs":
+
+                                break;
                         }
 
                     }
@@ -235,10 +563,8 @@ namespace EFT_Infrormer
 
            
         }
-                    
-           
 
-
+        
         private void CheckApp()
         {
             Thread thread1 = new Thread(CheckExf);
@@ -296,7 +622,8 @@ namespace EFT_Infrormer
                             if (buff2[1] == "bigmap")
                                 location = "Customs";
                             else
-                                location = buff2[2].Replace(',',' ');
+                                location = buff2[2].Replace(',',' ').Trim();
+                           // System.Windows.MessageBox.Show(location);
                              Dispatcher.Invoke(new Action(() => {
                                 RaidStatus.Content = "Active";
                                 RaidStatus.Foreground = Brushes.Green;
@@ -304,14 +631,24 @@ namespace EFT_Infrormer
                                 buff2 = buff[2].Split(' ');
                                 IPField.Content = buff2[2].Replace(',', ' ');
                                 buff2 = buff[3].Split(' ');
-                                IPField.Content += ":" + buff2[2].Replace(',', ' ');
+                                IPField.Content += ":" + buff2[2].Replace(',', ' ').Trim();
                                 buff2 = buff[7].Split(' ');
                                 SHID.Content = buff2[2].Replace('\'', ' ');
                             }));
                             
                             //start checking exfils
+                            if(thread1.ThreadState != ThreadState.Running)
+                            {
+                                thread1.Start();
+                            }
+                            else
+                            {
+                                thread1.Resume();
+                                
+                            }
+
                             
-                            //thread1.Start();
+
                             
 
                             break;
@@ -329,6 +666,11 @@ namespace EFT_Infrormer
                             }));
                             // stop checking exfils
 
+                            if(thread1.ThreadState == ThreadState.Running)
+                                thread1.Suspend();
+
+                                
+                               Dispatcher.Invoke(new Action(() => { if(top != null)top.Close(); }));
 
                         }
 
@@ -349,10 +691,23 @@ namespace EFT_Infrormer
            
         }
 
+        private void DrawExf(string exf)
+        {
+            top = new TopWindow(this,exf);
+            top.Show();
+        }
+
+        private void EditExf(string Exitname, string state)
+        {
+            string prevExf = top.Exfils.Content.ToString();
+            
+            
+        }
+  
         
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            thread2.Abort();
+        {   if(thread2 != null)
+                thread2.Abort();
             File.Delete(exfilPathNew);
             File.Delete(applicationPathNew);
         }

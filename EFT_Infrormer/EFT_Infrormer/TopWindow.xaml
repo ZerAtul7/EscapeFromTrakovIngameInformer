@@ -5,10 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EFT_Infrormer"
         mc:Ignorable="d"
-        Title="TopWindow" Height="200" Width="300" Background="Transparent" WindowStyle="None"  AllowsTransparency="True" WindowStartupLocation="Manual" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
+        Title="TopWindow" Height="200" Width="350" Background="Transparent" WindowStyle="None"  AllowsTransparency="True" WindowStartupLocation="Manual" MouseLeftButtonDown="Window_MouseLeftButtonDown" >
     <Grid>
-        
-        <Label Content="Exfils:" Foreground="ForestGreen" FontSize="25"/>
+        <StackPanel>
+            <Label Content="Exfils:" Foreground="ForestGreen" FontSize="25"/>
+            <Label x:Name="Exfils" Background="Transparent" Content="" FontSize="20" Foreground="Green">
+            </Label>
+            <Label x:Name="Notifications" Background="Transparent"  />
+        </StackPanel>
+       
 
     </Grid>
 </Window>
