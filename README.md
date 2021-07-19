@@ -8,4 +8,4 @@ Simple Escape From Tarkov inraid informer. Parse txt files and display all open 
 
 
 # Demonstration
-![alt tag]("https://i.imgur.com/46IKGfO.png")
+[alt tag]("https://i.imgur.com/46IKGfO.png")
