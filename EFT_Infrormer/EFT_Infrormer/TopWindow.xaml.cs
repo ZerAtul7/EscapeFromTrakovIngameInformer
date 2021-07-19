@@ -20,6 +20,7 @@ namespace EFT_Infrormer
     public partial class TopWindow : Window
     {
         MainWindow main { get; set; }
+        
         public TopWindow(MainWindow window,string message)
         {
             main = window;
